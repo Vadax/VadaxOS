@@ -11,10 +11,18 @@ Today's modern POSIX operating systems have become massively bloated, and often 
 
 #### Create a Custom Filesystem Hierarchy Standard
 
-- /apps   "Installation directory for multi-user applications not part of core system (web browser, games, text editor, ...))"
-- /mount  "Temporary mount points for mounting storage devices (USB, ...)"
-- /net    "Were different servers are installed (web, messaging, database, ...)"
-- /system "Contains the core operating system and supporting programs and libraries"
-- /users  "Contains users home directors"
+```
+/apps			<- multi-user applications /opt /usr/bin / /usr/local/bin ...
+/mnt			<- temp mounted filesystem	/mnt /media /proc 
+/net			<- web,email,chat servers run
+/system			<- the new /root 
+	/bin		<- /bin
+	/boot		<- /boot
+	/dev		<- /dev
+	/etc		<- /etc
+	/include	<- kinda like /usr/include but instead for system sdk /include 
+	/libs		<- /lib /lib64
+/users
+```
 
 #### Licensing problems caused by viral open-source licenses.
