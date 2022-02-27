@@ -2,6 +2,7 @@
 VadaxOS is an experimental minimal Linux operating system that features a custom filesystem hierarchy and C++ development environment built around (clang, cmake, git, icu, linux, llvm, musl, ninja, toybox, zsh).
 
 
+
 ### Problems we are solveing
 
 #### Freedom to Learn, Create and Experiment in a safe, friendly, and supportive environment.
