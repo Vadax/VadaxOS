@@ -1,1 +1,1 @@
-## Global application instilation directory.
+## Global application installation directory.
