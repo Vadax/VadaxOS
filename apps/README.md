@@ -1,2 +1,2 @@
-# Hydra
-Experimental Linux Operating System and C++ Software Development Kit
+# VadaxOS
+Experimental Operating System and C++ Software Development Kit
