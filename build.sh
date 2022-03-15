@@ -322,3 +322,4 @@ if [ "$(id -u -n)" = "vdx" ]; then
 		touch .stage.1;
 	fi
 fi
+
