@@ -1,30 +1,35 @@
 # https://linuxfromscratch.org/lfs/view/stable/chapter05/gcc-pass1.html
 
+pkg="gcc-11.2.0"
+mpfr="mpfr-4.1.0"
+gmp="gmp-6.2.1"
+mpc="mpc-1.2.1"
+
 echo "$(tput bold)$(tput setaf 4)GCC Pass 1 $(tput sgr0)";
 
 # check in binutils has been extracted
-if [ ! -d "$VDX/.build/sources/gcc-11.2.0" ]; then
-	tar -xvf $VDX/.build/sources/gcc-11.2.0.tar.xz -C $VDX/.build/sources	
+if [ ! -d "$VDX/.build/sources/$pkg" ]; then
+	tar -xvf $VDX/.build/sources/$pkg.tar.xz -C $VDX/.build/sources	
 fi
 
 # check if build directory exists
-if [ ! -d "$VDX/.build/sources/gcc-11.2.0/build" ]; then
-	mkdir -v $VDX/.build/sources/gcc-11.2.0/build
+if [ ! -d "$VDX/.build/sources/$pkg/build" ]; then
+	mkdir -v $VDX/.build/sources/$pkg/build
 fi
 
 # check if build stage is "configure"
-if [[ -e $VDX/.build/sources/gcc-11.2.0/build/.stage.config ]] 
+if [[ -e $VDX/.build/sources/$pkg/build/.stage.config ]] 
 then   
 	echo "$(tput setaf 6)Starting configure stage...$(tput sgr0)";
 
-	cd $VDX/.build/sources/gcc-11.2.0
+	cd $VDX/.build/sources/$pkg
 
-	tar -xf ../mpfr-4.1.0.tar.xz
-	mv -v mpfr-4.1.0 mpfr
-	tar -xf ../gmp-6.2.1.tar.xz
-	mv -v gmp-6.2.1 gmp
-	tar -xf ../mpc-1.2.1.tar.gz
-	mv -v mpc-1.2.1 mpc
+	tar -xf ../$mpfr.tar.xz
+	mv -v $mpfr mpfr
+	tar -xf ../$gmp.tar.xz
+	mv -v $gmp gmp
+	tar -xf ../$mpc.tar.gz
+	mv -v $mpc mpc
 
 	case $(uname -m) in
   	x86_64)
@@ -33,7 +38,7 @@ then
  	;;
 	esac
 
-	cd $VDX/.build/sources/gcc-11.2.0/build
+	cd $VDX/.build/sources/$pkg/build
 
 	../configure                  \
     	--target=$VDX_TGT         \
@@ -67,11 +72,11 @@ then
 
 
 # check if build stage is "make"
-elif [[ -e $VDX/.build/sources/gcc-11.2.0/build/.stage.compile ]]
+elif [[ -e $VDX/.build/sources/$pkg/build/.stage.compile ]]
 then
 	echo "$(tput setaf 6)Starting make stage...$(tput sgr0)";
 
-	cd $VDX/.build/sources/gcc-11.2.0/build
+	cd $VDX/.build/sources/$pkg/build
 
 	make
 
@@ -88,11 +93,11 @@ then
 
 
 # check if build stage is "make install"
-elif [[ -e $VDX/.build/sources/gcc-11.2.0/build/.stage.install ]]
+elif [[ -e $VDX/.build/sources/$pkg/build/.stage.install ]]
 then
 	echo "$(tput setaf 6)Starting make install stage...$(tput sgr0)";
 
-	cd $VDX/.build/sources/gcc-11.2.0/build
+	cd $VDX/.build/sources/$pkg/build
 	make install 
 
 	# check if make install was succesful
@@ -110,5 +115,5 @@ then
 
 
 else
-	touch $VDX/.build/sources/gcc-11.2.0/build/.stage.config
+	touch $VDX/.build/sources/$pkg/build/.stage.config
 fi
