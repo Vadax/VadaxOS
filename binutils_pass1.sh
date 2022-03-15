@@ -1,27 +1,26 @@
 # https://linuxfromscratch.org/lfs/view/stable/chapter05/binutils-pass1.html
 
-name="binutils"
-version="2.38"
+pkg="binutils-2.38"
 
 echo "$(tput bold)$(tput setaf 4)Bintuils Pass 1 $(tput sgr0)";
 
 # check in binutils has been extracted
-if [ ! -d "$VDX/.build/sources/$name-$version" ]; then
-	tar -xvf $VDX/.build/sources/$name-$version.tar.xz -C $VDX/.build/sources	
+if [ ! -d "$VDX/.build/sources/$pkg" ]; then
+	tar -xvf $VDX/.build/sources/$pkg.tar.xz -C $VDX/.build/sources	
 fi
 
 # check if build directory exists
-if [ ! -d "$VDX/.build/sources/$name-$version/build" ]; then
-	mkdir -v $VDX/.build/sources/$name-$version/build
+if [ ! -d "$VDX/.build/sources/$pkg/build" ]; then
+	mkdir -v $VDX/.build/sources/$pkg/build
 fi
 
 # check if build stage is "configure"
-if [[ -e $VDX/.build/sources/$name-$version/build/.stage.config ]] 
+if [[ -e $VDX/.build/sources/$pkg/build/.stage.config ]] 
 then   
 	echo "$(tput setaf 6)Starting configure stage...$(tput sgr0)";
 
 
-	cd $VDX/.build/sources/$name-$version/build
+	cd $VDX/.build/sources/$pkg/build
 
 	../configure --prefix=$VDX/.build/tools \
              	--with-sysroot=$VDX/system \
@@ -40,11 +39,11 @@ then
 
 
 # check if build stage is "make"
-elif [[ -e $VDX/.build/sources/$name-$version/build/.stage.compile ]]
+elif [[ -e $VDX/.build/sources/$pkg/build/.stage.compile ]]
 then
 	echo "$(tput setaf 6)Starting make stage...$(tput sgr0)";
 
-	cd $VDX/.build/sources/$name-$version/build
+	cd $VDX/.build/sources/$pkg/build
 
 	make
 
@@ -59,11 +58,11 @@ then
 
 
 # check if build stage is "make install"
-elif [[ -e $VDX/.build/sources/$name-$version/build/.stage.install ]]
+elif [[ -e $VDX/.build/sources/$pkg/build/.stage.install ]]
 then
 	echo "$(tput setaf 6)Starting make install stage...$(tput sgr0)";
 
-	cd $VDX/.build/sources/$name-$version/build
+	cd $VDX/.build/sources/$pkg/build
 	make install 
 
 	# check if make install was succesful
@@ -77,5 +76,5 @@ then
 
 
 else
-	touch $VDX/.build/sources/$name-$version/build/.stage.config
+	touch $VDX/.build/sources/$pkg/build/.stage.config
 fi
