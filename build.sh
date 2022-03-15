@@ -1,4 +1,7 @@
-: 'Copyright 22022 Steven Starr
+#!/bin/sh
+
+
+: 'Copyright 2022 Vadax
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided 
 that the following conditions are met:
@@ -21,54 +24,257 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABI
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 POSSIBILITY OF SUCH DAMAGE.'
 
-#!/usr/bin/zsh
 
-# Create VADAXOS directory and set the VDX enviroment varable to point to it.
-mkdir $PWD/VadaxOS
-export VDX="$PWD/VadaxOS"
+# https://linuxfromscratch.org/lfs/view/stable/chapter02/hostreqs.html
+# check if all required support programs and librarys are installed
+# bison
+if [ ! -e /usr/bin/bison ]; then
+	sudo apt-get install bison
+fi
 
-# Create VadaxOS filesystem hiearchey
-mkdir -pv $VDX/{apps,mnt,net} $VDX/system/{bin,boot,dev,ect,include,libs} $VDX/system/build/{sources,tools}
+# yacc
+if [ ! -h /usr/bin/yacc ]; then
+	sudo apt-get install byacc
+fi
 
-#for i in bin lib; do
-#    ln -sv usr/$i $VDX/system/$i
-#done
+# m4
+if [ ! -e /usr/bin/m4 ]; then
+	sudo apt-get install m4
+fi
 
-# Create vdx user and set password
-groupadd vdx_user
-useradd -s /bin/bash -g vdx_user -m -k /dev/null vdx_user
-passwd vdx_user
+# texinfo
+if [ ! -e /usr/bin/texindex ]; then
+	sudo apt-get install texinfo
+fi
 
-# Change VadaxOS directory permissions to vdx_user
-chown -v vdx_user $VDX/{system{,/*}}
-case $(uname -m) in
-  x86_64) chown -v lfs $LFS/lib64 ;;
-esac
+# tar
+if [ ! -e /usr/bin/tar ]; then
+	sudo apt-get install tar
+fi
 
-# Login to vdx_user account
-su - vdx_user
+# xz
+if [ ! -e /usr/bin/xz ]; then
+	sudo apt-get install xz-utils
+fi
 
-# Latest packages src as of 2/26/2022 
-SRC[]="https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.1/clang-13.0.1.src.tar.xz"          # C Compiler
-SRC[]="https://cmake.org/files/v3.22/cmake-3.22.2.tar.gz"                                                      # C & C++ build system
-SRC[]="https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.1/compiler-rt-13.0.1.src.tar.xz"    # 
-SRC[]="https://github.com/tianocore/edk2/archive/refs/tags/edk2-stable202202.tar.gz"
-SRC[]="https://www.kernel.org/pub/software/scm/git/git-2.35.1.tar.gz"                                          # Version Control System
-SRC[]="https://github.com/libuv/libuv/archive/refs/tags/v1.43.0.tar.gz"                                        # Asynchronous I/O based on event loops.
-SRC[]="https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.16.11.tar.xz"                                      # Operating System Kernel
-SRC[]="https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.1/llvm-13.0.1.src.tar.xz"           # C++ Compiler and Toolchain
-SRC[]="https://musl.libc.org/releases/musl-1.2.2.tar.gz"                                                       # Standard C Library
-SRC[]="https://github.com/ninja-build/ninja/archive/refs/tags/v1.10.2.tar.gz"                                  # 
-SRC[]="https://cfhcable.dl.sourceforge.net/project/refind/0.13.2/refind-src-0.13.2.tar.gz"                     # UEFI Bootmanager & Loader             
-SRC[]="https://github.com/landley/toybox/archive/refs/tags/0.8.6.tar.gz"
-SRC[]="https://www.zsh.org/pub/zsh-5.8.1.tar.xz"								# Z Shell
+# make
+if [ ! -e /usr/bin/make ]; then
+	sudo apt-get install make
+fi
+
+# sed
+if [ ! -e /usr/bin/sed ]; then
+	sudo apt-get install sed
+fi
+
+# gzip
+if [ ! -e /usr/bin/gzip ]; then
+	sudo apt-get install gzip
+fi
+
+# grep
+if [ ! -e /usr/bin/grep ]; then
+	sudo apt-get install grep
+fi
+
+# python3
+if [ ! -e /usr/bin/python3 ]; then
+	sudo apt-get install python3-minimal
+fi
+
+# patch
+if [ ! -e /usr/bin/patch ]; then
+	sudo apt-get install patch
+fi
+
+# perl
+if [ ! -e /usr/bin/perl ]; then
+	sudo apt-get install perl-base
+fi
+
+# gcc
+if [ ! -e /usr/bin/gcc ]; then
+	sudo apt-get install gcc libc-dev
+fi
+
+# g++
+if [ ! -e /usr/bin/g++ ]; then
+	sudo apt-get install g++
+fi
+
+# find
+if [ ! -e /usr/bin/find ]; then
+	sudo apt-get install findutils
+fi
+
+# diff
+if [ ! -e /usr/bin/diff ]; then
+	sudo apt-get install diffutils
+fi
+
+# binutils
+if [ ! -e /usr/bin/c++filt ]; then
+	sudo apt-get install binutils
+fi
+
+# coreutils
+if [ ! -e /usr/bin/cat ]; then
+	sudo apt-get install coreutils
+fi
 
 
-# 
+
+# https://linuxfromscratch.org/lfs/view/stable/chapter02/aboutlfs.html
+# Check if VDX varable is set 
+if [ ! -n "$VDX" ]; then        
+	export VDX="/mnt/vdx" 
+fi
 
 
-# Bownload src packages to src/ dir
-for i in "${SRC[@]}"
-do
-   wget "$i" -P src/
-done
+
+# https://linuxfromscratch.org/lfs/view/stable/chapter02/mounting.html
+# Check if /mnt/vdx exist
+if [ ! -d "$VDX" ]; then   
+	sudo mkdir -pv $VDX
+fi
+
+# Check if /mnt/vdx is mounted to device
+if ! mount | grep $VDX > /dev/null; then
+	sudo mount /dev/sda1 $VDX
+fi
+
+
+
+# https://linuxfromscratch.org/lfs/view/stable/chapter03/introduction.html
+# ALERT WE SHOULD BE ROOT
+# check if $VDX/.build/sources dir exist
+if [ ! -d "$VDX/.build/sources" ]; then
+
+	if [ "$EUID" -ne 0 ]; then
+  		echo "Login to root to exacute these commands"
+	else
+		echo "I am root and creating .build/sources"
+		mkdir -pv $VDX/.build/sources
+		chmod -v a+wt $VDX/.build/sources
+	fi 
+fi
+
+
+
+# https://linuxfromscratch.org/lfs/view/stable/chapter04/creatingminlayout.html
+# Note: 1. Need to get rid of sbin and the usr dirs
+# check if $VDX/system dir exist
+if [ ! -d "$VDX/system" ]; then
+
+	if [ "$EUID" -ne 0 ]; then
+  		echo "Login to root to exacute these commands"
+	else
+		echo "I am root and creating .build/sources"
+		mkdir -pv $VDX/{apps,mnt,net,users} $VDX/system/{boot,dev,ect,include,var} $VDX/system/usr/{bin,lib,sbin} $VDX/.build/tools
+
+		for i in bin lib; do
+  			ln -sv usr/$i $VDX/system/$i
+		done
+	fi 
+fi
+
+
+
+# https://linuxfromscratch.org/lfs/view/stable/chapter04/addinguser.html
+# check if VDX user exists
+if ! id "vdx" &>/dev/null; then
+
+	if [ "$EUID" -ne 0 ]; then
+  		echo "Login to root to exacute these commands"
+	else
+		groupadd vdx
+		useradd -s /bin/bash -g vdx -m -k /dev/null vdx
+		passwd vdx
+	fi 
+fi
+
+# check if root owns the directors in $VDX 
+if [ -n "$(find $VDX/system -user "0" -print -prune -o -prune)" ]; then
+  
+	# copy build.sh to $VDX/.build
+	cp -a build.sh $VDX/.build/build.sh
+
+	chown -v vdx $VDX/{system{,/*},apps,mnt,net,users,.build{,/*}}
+	case $(uname -m) in
+  		x86_64) chown -v vdx $VDX/system/lib64 ;;
+	esac
+fi
+
+
+
+# https://linuxfromscratch.org/lfs/view/stable/chapter04/settingenvironment.html
+# ALERT WE SHOULD BE VDX
+# set bash profiles
+if [ "$(id -u -n)" = "vdx" ]; then
+
+# check if ~/.bash_profile
+if [ ! -e ~/.bash_profile ]; then
+
+cat > ~/.bash_profile << "EOF"
+exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
+EOF
+
+fi
+
+# check if ~/.bashrc exists
+if [ ! -e ~/.bashrc ]; then
+
+cat > ~/.bashrc << "EOF"
+set +h
+umask 022
+VDX=/mnt/vdx
+LC_ALL=POSIX
+VDX_TGT=$(uname -m)-vdx-linux-gnu
+PATH=/usr/bin
+if [ ! -L /bin ]; then PATH=/bin:$PATH; fi
+PATH=$VDX/.build/tools/bin:$PATH
+CONFIG_SITE=$VDX/system/usr/share/config.site
+export VDX LC_ALL VDX_TGT PATH CONFIG_SITE
+EOF
+
+fi
+
+fi
+
+
+
+# ALERT WE SHOULD BE ROOT
+# move /etc/bash.bashrc to /etc/bash.bashrc.NOUSE as root
+if [ ! -e /etc/bash.bashrc.NOUSE ]; then
+
+	if [ ! "$(id -u -n)" = "root" ]; then
+		echo -e "We need to move /etc/bash.bashrc to /etc/bash.bashrc.NOUSE as" 
+		echo -e "the root user please login as root and exacute build.sh."
+	else
+		[ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
+	fi
+fi
+
+
+
+# ALERT WE SHOULD BE VDX
+# source ~/.bash_profile
+if [ ! "$(id -u -n)" = "vdx" ]; then
+	echo -e "Log in as VDX and exacute build.sh"
+else
+	echo -e "You need to uncomment line 277 if you havent source ~/.bash_profile"
+	#source ~/.bash_profile
+fi
+
+
+
+# download src packages
+if [ "$(id -u -n)" = "vdx" ]; then
+
+	if [ ! "$(ls -A $VDX/.build/sources)" ]; then   
+
+		wget https://www.linuxfromscratch.org/lfs/downloads/stable/wget-list
+		wget --input-file=wget-list --continue --directory-prefix=$VDX/.build/sources
+
+	fi
+fi
