@@ -278,3 +278,47 @@ if [ "$(id -u -n)" = "vdx" ]; then
 
 	fi
 fi
+
+
+# download src packages
+if [ "$(id -u -n)" = "vdx" ]; then
+
+	# binutils_pass1
+	if [[ -e $VDX/.build/.stage.1 ]] 
+	then   
+		echo "stage 1";
+		source binutils_pass1.sh
+
+		# check if binutils_pass1.sh was succesfull
+		if [ $? -eq 0 ]; then
+   			mv .stage.1 .stage.2
+		else
+   			echo "$(tput bold)$(tput setaf 1)Error: binutils_pass1.sh failed $(tput sgr0)";
+		fi
+
+	# gcc_pass1
+	elif [[ -e $VDX/.build/.stage.2 ]] 
+	then
+		echo "stage 2"; # for debuging
+
+		source $VDX/.build/gcc_pass1.sh
+
+		# check if gcc_pass1.sh was succesful
+		if [ $? -eq 0 ]; then
+   			mv .stage.2 .stage.3
+		else
+   			echo "$(tput bold)$(tput setaf 1)Error: gcc_pass1.sh failed $(tput sgr0)";
+		fi
+
+	# stage 3
+	elif [[ -e $VDX/.build/.stage.3 ]]
+	then
+		echo "stage 3";
+
+	elif [[ -e $VDX/.build/.stage.4 ]]
+	then
+		echo "stage 4";
+	else  
+		touch .stage.1;
+	fi
+fi
