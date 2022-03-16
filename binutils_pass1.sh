@@ -4,16 +4,25 @@ pkg="binutils-2.38"
 
 echo "$(tput bold)$(tput setaf 4)Bintuils Pass 1 $(tput sgr0)";
 
-# check in binutils has been extracted
-if [ ! -d "$VDX/.build/sources/$pkg" ]; then
-	tar -xvf $VDX/.build/sources/$pkg.tar.xz -C $VDX/.build/sources	
-fi
 
+extract() {
+# check in binutils has been extracted
+if [ ! -d "$VDX/.build/sources/$pkg" ] 
+then
+	tar -xvf $VDX/.build/sources/$pkg.tar.xz -C $VDX/.build/sources	
+	build_dir
+fi
+}
+
+build_dir() {
 # check if build directory exists
 if [ ! -d "$VDX/.build/sources/$pkg/build" ]; then
 	mkdir -v $VDX/.build/sources/$pkg/build
+	binutils_pass1
 fi
+}
 
+binutils_pass1() {
 # check if build stage is "configure"
 if [[ -e $VDX/.build/sources/$pkg/build/.stage.config ]] 
 then   
@@ -31,6 +40,7 @@ then
 	# check if configure was succesful
 	if [ $? -eq 0 ]; then
    		mv .stage.config .stage.compile
+		binutils_pass1
 	else
    		echo "$(tput bold)$(tput setaf 1)Error: failed to configure Binutils Pass 1 $(tput sgr0)";
 		return 1; # return an error code
@@ -50,6 +60,7 @@ then
 	# check if make was succesful
 	if [ $? -eq 0 ]; then
    		mv .stage.compile .stage.install
+		binutils_pass1
 	else
    		echo "$(tput bold)$(tput setaf 1)Error: failed to compile Binutils Pass 1 $(tput sgr0)";
 		return 1; # return error code
@@ -77,4 +88,8 @@ then
 
 else
 	touch $VDX/.build/sources/$pkg/build/.stage.config
+	binutils_pass1
 fi
+}
+
+extract
